@@ -1,0 +1,246 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Librarian Dashboard | StudentMate</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <style>
+    * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Inter', sans-serif; }
+    body { background: #0d1117; color: #e6edf3; padding-bottom: 50px; }
+    .header { background: #161b22; padding: 25px 5%; border-bottom: 1px solid #30363d; display: flex; justify-content: space-between; align-items: center; }
+    .header-title h1 { font-size: 22px; color: #22c55e; display: flex; align-items: center; gap: 10px; }
+    .header-title p { font-size: 13px; color: #8b949e; margin-top: 2px; }
+    
+    .container { width: 90%; max-width: 1200px; margin: 30px auto; }
+    
+    /* Stats Layout */
+    .stats-row { display: grid; grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); gap: 20px; margin-bottom: 30px; }
+    .stat-card { background: #161b22; padding: 20px; border-radius: 16px; border: 1px solid #30363d; display: flex; flex-direction: column; justify-content: space-between; }
+    .stat-card h4 { font-size: 13px; color: #8b949e; text-transform: uppercase; letter-spacing: 0.5px; }
+    .stat-card .value { font-size: 32px; font-weight: 700; color: #e6edf3; margin-top: 10px; }
+    .stat-card .sub-value { font-size: 12px; margin-top: 5px; color: #4ade80; }
+    
+    /* Main View Grid */
+    .view-grid { display: grid; grid-template-columns: 1fr; gap: 20px; }
+    .search-row { display: flex; gap: 12px; margin-bottom: 10px; flex-wrap: wrap; }
+    .search-box { flex: 1; padding: 12px 15px; border-radius: 10px; border: 1px solid #30363d; background: #161b22; color: white; font-size: 14px; outline: none; min-width: 250px; }
+    .search-box:focus { border-color: #58a6ff; }
+    .filter-select { padding: 12px; border-radius: 10px; border: 1px solid #30363d; background: #161b22; color: white; font-size: 14px; outline: none; }
+    
+    /* Feedback Feed */
+    .feed-container { background: #161b22; border-radius: 16px; border: 1px solid #30363d; overflow: hidden; }
+    .feed-header { padding: 20px; border-bottom: 1px solid #30363d; display: flex; justify-content: space-between; align-items: center; }
+    .feed-header h3 { font-size: 16px; font-weight: 600; }
+    
+    .feed { padding: 20px; display: flex; flex-direction: column; gap: 15px; }
+    .feed-card { background: #0d1117; border: 1px solid #30363d; border-radius: 12px; padding: 20px; transition: border-color 0.2s; position: relative; }
+    .feed-card:hover { border-color: #8b5cf6; }
+    
+    .card-meta { display: flex; justify-content: space-between; margin-bottom: 10px; align-items: center; }
+    .student-info { display: flex; align-items: center; gap: 10px; }
+    .student-name { font-weight: 600; font-size: 15px; color: #58a6ff; }
+    .student-meta-sub { font-size: 12px; color: #8b949e; }
+    
+    .rating-badge { background: #fac775; color: #854f0b; padding: 3px 8px; border-radius: 6px; font-weight: 700; font-size: 12px; display: inline-flex; align-items: center; gap: 4px; }
+    .rating-badge svg { width: 12px; height: 12px; fill: currentColor; }
+    
+    .category-badge { background: #30363d; color: #c9d1d9; border: 1px solid #444c56; font-size: 11px; padding: 4px 10px; border-radius: 20px; display: inline-block; font-weight: 500; margin-bottom: 10px; }
+    .feedback-text { font-size: 14px; color: #e6edf3; line-height: 1.5; margin-bottom: 15px; }
+    
+    .delete-btn { border: 1px solid #f85149; background: #4a1515; color: #f87171; padding: 6px 12px; border-radius: 8px; font-size: 12px; font-weight: 600; cursor: pointer; transition: background 0.2s; float: right; }
+    .delete-btn:hover { background: #671414; }
+    
+    .empty { text-align: center; padding: 50px; color: #8b949e; font-size: 15px; }
+  </style>
+</head>
+<body>
+
+<div class="header">
+  <div class="header-title">
+    <h1>📚 Librarian Control Dashboard</h1>
+    <p>Monitor, search, and manage student library feedback records</p>
+  </div>
+</div>
+
+<div class="container">
+  <!-- Interactive Metrics Row -->
+  <div class="stats-row">
+    <div class="stat-card">
+      <h4>Total Reviews</h4>
+      <div class="value" id="totalReviews">0</div>
+      <div class="sub-value">Real-time incoming</div>
+    </div>
+    <div class="stat-card">
+      <h4>Average Rating</h4>
+      <div class="value" id="avgRating">0.0 ★</div>
+      <div class="sub-value" style="color:#f59e0b" id="ratingVerdict">No Ratings</div>
+    </div>
+    <div class="stat-card">
+      <h4>Key Concern Area</h4>
+      <div class="value" style="font-size: 20px; color: #f87171; overflow: hidden; text-overflow: ellipsis; white-space: nowrap;" id="topConcern">None</div>
+      <div class="sub-value" style="color: #f87171;">Needs attention</div>
+    </div>
+  </div>
+
+  <div class="view-grid">
+    <!-- Filter Bar -->
+    <div class="search-row">
+      <input type="text" id="search" class="search-box" placeholder="Search feedback by student name, roll number, or department...">
+      
+      <select id="areaFilter" class="filter-select">
+        <option value="all">All Areas</option>
+        <option value="Books Availability">Books Availability</option>
+        <option value="Seating Ambiance">Seating & Silence</option>
+        <option value="Wi-Fi/Computers">Wi-Fi & PCs</option>
+        <option value="Staff Support">Staff Support</option>
+        <option value="Cleanliness">Cleanliness</option>
+      </select>
+
+      <select id="ratingFilter" class="filter-select">
+        <option value="all">All Ratings</option>
+        <option value="5">5 Stars</option>
+        <option value="4">4 Stars</option>
+        <option value="3">3 Stars</option>
+        <option value="2">2 Stars</option>
+        <option value="1">1 Star</option>
+      </select>
+    </div>
+
+    <!-- Feedback Entries Box -->
+    <div class="feed-container">
+      <div class="feed-header">
+        <h3>Incoming Feedback Feed</h3>
+      </div>
+      <div class="feed" id="feed">
+        <div class="empty">Loading feedback database...</div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script>
+  let rawFeedback = [];
+
+  async function loadFeedback() {
+    try {
+      const res = await fetch("/feedbacks");
+      rawFeedback = await res.json();
+      calculateMetrics();
+      renderFeed();
+    } catch(err) {
+      document.getElementById("feed").innerHTML = `<div class="empty">❌ Failed to retrieve library feedback: ${err.message}</div>`;
+    }
+  }
+
+  function calculateMetrics() {
+    const total = rawFeedback.length;
+    document.getElementById("totalReviews").textContent = total;
+
+    if (total === 0) {
+      document.getElementById("avgRating").textContent = "0.0 ★";
+      document.getElementById("ratingVerdict").textContent = "No feedback";
+      document.getElementById("topConcern").textContent = "None";
+      return;
+    }
+
+    // Average rating calculations
+    const sum = rawFeedback.reduce((acc, curr) => acc + parseFloat(curr.rating || 0), 0);
+    const avg = (sum / total).toFixed(1);
+    document.getElementById("avgRating").textContent = `${avg} ★`;
+
+    let verdict = "Excellent Status";
+    if (avg < 4.0) verdict = "Good Status";
+    if (avg < 3.0) verdict = "Review Requested";
+    if (avg < 2.0) verdict = "Critical Attention Needed";
+    document.getElementById("ratingVerdict").textContent = verdict;
+
+    // Top Concern metrics calculations
+    const concerns = {};
+    rawFeedback.forEach(f => {
+      concerns[f.primaryArea] = (concerns[f.primaryArea] || 0) + 1;
+    });
+    let top = "None";
+    let max = 0;
+    for (const key in concerns) {
+      if (concerns[key] > max) {
+        max = concerns[key];
+        top = key;
+      }
+    }
+    document.getElementById("topConcern").textContent = top;
+  }
+
+  function renderFeed() {
+    const searchVal = document.getElementById("search").value.toLowerCase();
+    const areaFilter = document.getElementById("areaFilter").value;
+    const ratingFilter = document.getElementById("ratingFilter").value;
+
+    const filtered = rawFeedback.filter(f => {
+      const matchesSearch = 
+        (f.studentName || "").toLowerCase().includes(searchVal) || 
+        (f.rollNo || "").toLowerCase().includes(searchVal) || 
+        (f.dept || "").toLowerCase().includes(searchVal) ||
+        (f.detailedFeedback || "").toLowerCase().includes(searchVal);
+      const matchesArea = areaFilter === "all" || f.primaryArea === areaFilter;
+      const matchesRating = ratingFilter === "all" || String(f.rating) === ratingFilter;
+
+      return matchesSearch && matchesArea && matchesRating;
+    });
+
+    const feedEl = document.getElementById("feed");
+    if(filtered.length === 0) {
+      feedEl.innerHTML = `<div class="empty">No matching library feedback entries found. 📚</div>`;
+      return;
+    }
+
+    let html = "";
+    filtered.forEach(f => {
+      html += `
+        <div class="feed-card">
+          <div class="card-meta">
+            <div class="student-info">
+              <div>
+                <div class="student-name">${f.studentName} <span class="student-meta-sub">(${f.rollNo})</span></div>
+                <div class="student-meta-sub" style="margin-top: 3px;">Dept: <strong>${f.dept}</strong></div>
+              </div>
+            </div>
+            <div class="rating-badge">
+              <svg viewBox="0 0 24 24"><path d="M12 17.27L18.18 21l-1.64-7.03L22 9.24l-7.19-.61L12 2 9.19 8.63 2 9.24l5.46 4.73L5.82 21z"/></svg>
+              ${f.rating} Stars
+            </div>
+          </div>
+          <div class="category-badge">${f.primaryArea}</div>
+          <div class="feedback-text">"${f.detailedFeedback}"</div>
+          <button class="delete-btn" onclick="deleteFeedback(${f.id})">🗑 Delete Record</button>
+          <div style="clear: both;"></div>
+        </div>`;
+    });
+    feedEl.innerHTML = html;
+  }
+
+  // Set event listeners for search and filter controls
+  document.getElementById("search").addEventListener("input", renderFeed);
+  document.getElementById("areaFilter").addEventListener("change", renderFeed);
+  document.getElementById("ratingFilter").addEventListener("change", renderFeed);
+
+  async function deleteFeedback(id) {
+    if (confirm("Are you sure you want to permanently delete this feedback?")) {
+      try {
+        const res = await fetch(`/feedbacks/${id}`, { method: "DELETE" });
+        const data = await res.json();
+        if (data.success) {
+          loadFeedback();
+        } else {
+          alert("Delete failed: " + data.error);
+        }
+      } catch (err) {
+        alert("Error executing delete: " + err.message);
+      }
+    }
+  }
+
+  loadFeedback();
+</script>
+</body>
+</html>

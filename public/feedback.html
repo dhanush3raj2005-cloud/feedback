@@ -1,0 +1,141 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Library Feedback | StudentMate</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <style>
+    * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Inter', sans-serif; }
+    body { background: #0d1117; color: #e6edf3; display: flex; justify-content: center; align-items: center; min-height: 100vh; padding: 20px; }
+    .form-box { background: #161b22; padding: 40px 30px; width: 100%; max-width: 500px; border-radius: 20px; border: 1px solid #30363d; box-shadow: 0 10px 40px rgba(0,0,0,0.6); }
+    h2 { margin-bottom: 8px; font-weight: 700; font-size: 24px; text-align: center; color: #58a6ff; }
+    .subtitle { text-align: center; color: #8b949e; font-size: 14px; margin-bottom: 25px; }
+    
+    label { display: block; font-size: 13px; font-weight: 600; color: #c9d1d9; margin-top: 15px; margin-bottom: 6px; text-transform: uppercase; letter-spacing: 0.5px; }
+    input, select, textarea { width: 100%; padding: 12px; border-radius: 10px; border: 1px solid #30363d; background: #0d1117; color: #e6edf3; font-size: 14px; outline: none; transition: border-color 0.2s, box-shadow 0.2s; }
+    input:focus, select:focus, textarea:focus { border-color: #58a6ff; box-shadow: 0 0 0 2px rgba(88,166,255,0.15); }
+    textarea { resize: none; height: 90px; }
+    
+    /* Interactive Stars */
+    .rating-container { display: flex; justify-content: center; gap: 8px; margin: 15px 0; flex-direction: row-reverse; }
+    .rating-container input { display: none; }
+    .rating-container label { cursor: pointer; width: 40px; height: 40px; margin: 0; padding: 0; color: #30363d; transition: color 0.2s, transform 0.1s; }
+    .rating-container label svg { width: 100%; height: 100%; fill: currentColor; }
+    
+    /* Highlight selected and hovered stars */
+    .rating-container input:checked ~ label,
+    .rating-container label:hover,
+    .rating-container label:hover ~ label { color: #f59e0b; }
+    .rating-container label:active { transform: scale(0.9); }
+
+    button { width: 100%; padding: 14px; margin-top: 25px; border: none; border-radius: 12px; background: linear-gradient(90deg, #58a6ff, #8b5cf6); color: white; font-size: 15px; font-weight: 700; cursor: pointer; transition: transform 0.2s, opacity 0.2s; }
+    button:hover { opacity: 0.95; transform: translateY(-1px); }
+    button:active { transform: translateY(1px); }
+    
+    #msg { margin-top: 20px; font-size: 14px; font-weight: 500; text-align: center; min-height: 20px; }
+  </style>
+</head>
+<body>
+<div class="form-box">
+  <h2>📚 Library Feedback</h2>
+  <p class="subtitle">Help us improve your reading and study experience!</p>
+  
+  <label for="studentName">Student Name</label>
+  <input type="text" id="studentName" placeholder="Enter your full name">
+
+  <label for="rollNo">Register/Roll Number</label>
+  <input type="text" id="rollNo" placeholder="e.g., 22CS104">
+
+  <label for="dept">Department</label>
+  <select id="dept">
+    <option value="" disabled selected>Select your Department</option>
+    <option value="Computer Science">Computer Science & Eng.</option>
+    <option value="Information Technology">Information Technology</option>
+    <option value="Electronics">Electronics & Comm. Eng.</option>
+    <option value="Electrical">Electrical & Electronics Eng.</option>
+    <option value="Mechanical">Mechanical Engineering</option>
+    <option value="Civil">Civil Engineering</option>
+  </select>
+
+  <label>Overall Experience Rating</label>
+  <div class="rating-container">
+    <input type="radio" name="rating" id="star5" value="5"><label for="star5" title="Excellent"><svg viewBox="0 0 24 24"><path d="M12 17.27L18.18 21l-1.64-7.03L22 9.24l-7.19-.61L12 2 9.19 8.63 2 9.24l5.46 4.73L5.82 21z"/></svg></label>
+    <input type="radio" name="rating" id="star4" value="4"><label for="star4" title="Good"><svg viewBox="0 0 24 24"><path d="M12 17.27L18.18 21l-1.64-7.03L22 9.24l-7.19-.61L12 2 9.19 8.63 2 9.24l5.46 4.73L5.82 21z"/></svg></label>
+    <input type="radio" name="rating" id="star3" value="3"><label for="star3" title="Average"><svg viewBox="0 0 24 24"><path d="M12 17.27L18.18 21l-1.64-7.03L22 9.24l-7.19-.61L12 2 9.19 8.63 2 9.24l5.46 4.73L5.82 21z"/></svg></label>
+    <input type="radio" name="rating" id="star2" value="2"><label for="star2" title="Poor"><svg viewBox="0 0 24 24"><path d="M12 17.27L18.18 21l-1.64-7.03L22 9.24l-7.19-.61L12 2 9.19 8.63 2 9.24l5.46 4.73L5.82 21z"/></svg></label>
+    <input type="radio" name="rating" id="star1" value="1"><label for="star1" title="Very Bad"><svg viewBox="0 0 24 24"><path d="M12 17.27L18.18 21l-1.64-7.03L22 9.24l-7.19-.61L12 2 9.19 8.63 2 9.24l5.46 4.73L5.82 21z"/></svg></label>
+  </div>
+
+  <label for="primaryArea">Area Needing Improvement</label>
+  <select id="primaryArea">
+    <option value="" disabled selected>Select primary issue area</option>
+    <option value="Books Availability">Books Availability / Syllabus Coverage</option>
+    <option value="Seating Ambiance">Seating & Silence Ambiance</option>
+    <option value="Wi-Fi/Computers">Wi-Fi & Digital Library Computers</option>
+    <option value="Staff Support">Staff Support & Behavior</option>
+    <option value="Cleanliness">Cleanliness & Air Conditioning</option>
+  </select>
+
+  <label for="detailedFeedback">Detailed Suggestions</label>
+  <textarea id="detailedFeedback" placeholder="Please write details about your experience..."></textarea>
+
+  <button id="submitBtn">Submit Feedback</button>
+  <p id="msg"></p>
+</div>
+
+<script>
+document.getElementById("submitBtn").addEventListener("click", async () => {
+  const studentName = document.getElementById("studentName").value.trim();
+  const rollNo = document.getElementById("rollNo").value.trim();
+  const dept = document.getElementById("dept").value;
+  const primaryArea = document.getElementById("primaryArea").value;
+  const detailedFeedback = document.getElementById("detailedFeedback").value.trim();
+  
+  // Get active star rating value
+  const activeRatingEl = document.querySelector('input[name="rating"]:checked');
+  const rating = activeRatingEl ? activeRatingEl.value : null;
+
+  const msgEl = document.getElementById("msg");
+
+  if(!studentName || !rollNo || !dept || !rating || !primaryArea || !detailedFeedback){
+    msgEl.style.color = "#f87171";
+    msgEl.innerText = "⚠️ Please fill in all fields and select a rating.";
+    return;
+  }
+
+  msgEl.style.color = "#8b949e";
+  msgEl.innerText = "Submitting feedback...";
+
+  try {
+    const res = await fetch('/add-feedback', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ studentName, rollNo, dept, rating, primaryArea, detailedFeedback })
+    });
+
+    const data = await res.json();
+
+    if(data.success){
+      msgEl.style.color = "#4ade80";
+      msgEl.innerText = "✅ Thank you! Your feedback has been recorded.";
+      // Reset Form fields
+      document.getElementById("studentName").value = "";
+      document.getElementById("rollNo").value = "";
+      document.getElementById("dept").value = "";
+      document.getElementById("primaryArea").value = "";
+      document.getElementById("detailedFeedback").value = "";
+      if(activeRatingEl) activeRatingEl.checked = false;
+    } else {
+      msgEl.style.color = "#f87171";
+      msgEl.innerText = "❌ Error: " + data.error;
+    }
+  } catch(err){
+    console.error(err);
+    msgEl.style.color = "#f87171";
+    msgEl.innerText = "❌ Connection failed: " + err.message;
+  }
+});
+</script>
+</body>
+</html>
